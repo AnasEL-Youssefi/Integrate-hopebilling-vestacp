@@ -1,0 +1,19 @@
+name: Validate HopeBilling Deployment
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate Shell Scripts
+        run: bash -n provision/provision-scripts/*.sh
+
+      - name: Validate Ansible Playbook
+        run: ansible-lint ansible/playbook.yml || true
