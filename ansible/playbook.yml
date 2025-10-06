@@ -1,0 +1,27 @@
+---
+- name: Deploy HopeBilling with VestaCP
+  hosts: all
+  become: yes
+  tasks:
+    - name: Update packages
+      apt:
+        update_cache: yes
+
+    - name: Install prerequisites
+      apt:
+        name: ["curl", "wget", "unzip", "apache2", "mysql-server", "php", "php-mysql"]
+        state: present
+
+    - name: Install VestaCP
+      shell: curl -O http://vestacp.com/pub/vst-install.sh && bash vst-install.sh --force --nginx yes --apache yes
+
+    - name: Download HopeBilling
+      get_url:
+        url: https://github.com/hopebilling/hopebilling/archive/refs/heads/master.zip
+        dest: /tmp/hopebilling.zip
+
+    - name: Unzip HopeBilling
+      unarchive:
+        src: /tmp/hopebilling.zip
+        dest: /home/admin/web/{{ domain }}/public_html
+        remote_src: yes
